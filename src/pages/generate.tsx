@@ -1,18 +1,23 @@
 import { type NextPage } from "next";
+import { signIn, signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 import { useState } from "react";
+import { Button } from "~/component/Button";
 import { FormGroup } from "~/component/FormGroup";
 import { Input } from "~/component/Input";
 import { api } from "~/utils/api";
+import Image from "next/image";
 
 const GeneratePage: NextPage = () => {
   const [form, setForm] = useState({
     prompt: "",
   });
+  const [imageUrl, setImageUrl] = useState("");
 
   const generateIcon = api.generate.generateIcon.useMutation({
     onSuccess(data) {
-      console.log("Mutation finished", data);
+      if (!data.imageUrl) return;
+      setImageUrl(data.imageUrl);
     },
   });
 
@@ -21,6 +26,7 @@ const GeneratePage: NextPage = () => {
     generateIcon.mutate({
       prompt: form.prompt,
     });
+    setForm({ prompt: "" });
   }
 
   function updateForm(key: string) {
@@ -31,6 +37,11 @@ const GeneratePage: NextPage = () => {
       }));
     };
   }
+
+  const session = useSession();
+
+  const isLoggedIn = !!session.data; // the !!, force this too be a boolean
+
   return (
     <>
       <Head>
@@ -39,15 +50,26 @@ const GeneratePage: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="flex min-h-screen flex-col items-center justify-center">
+        {/* If user is not logged in, then show button to login */}
+        {!isLoggedIn && (
+          <Button onClick={() => signIn().catch(console.error)}>Login</Button>
+        )}
+        {isLoggedIn && (
+          <Button onClick={() => signOut().catch(console.error)}>Logout</Button>
+        )}
         <form className="flex flex-col gap-4" onSubmit={handleFormSubmit}>
           <FormGroup>
             <label>Prompt</label>
             <Input value={form.prompt} onChange={updateForm("prompt")}></Input>
           </FormGroup>
-          <button className="rounded bg-blue-400 px-4 py-2 hover:bg-blue-950">
-            Submit
-          </button>
+          <Button>Submit</Button>
         </form>
+        <img
+          src={`data:image/png;base64,${imageUrl}`}
+          alt="An image of your generated prompt"
+          height="100"
+          width="100"
+        />
       </main>
     </>
   );
