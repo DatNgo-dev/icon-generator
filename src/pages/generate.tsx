@@ -7,8 +7,10 @@ import { FormGroup } from "~/component/FormGroup";
 import { Input } from "~/component/Input";
 import { api } from "~/utils/api";
 import Image from "next/image";
+import { useBuyCredits } from "~/hooks/useBuyCredits";
 
 const GeneratePage: NextPage = () => {
+  const { buyCredits } = useBuyCredits();
   const [form, setForm] = useState({
     prompt: "",
   });
@@ -55,7 +57,14 @@ const GeneratePage: NextPage = () => {
           <Button onClick={() => signIn().catch(console.error)}>Login</Button>
         )}
         {isLoggedIn && (
-          <Button onClick={() => signOut().catch(console.error)}>Logout</Button>
+          <>
+            <Button onClick={() => buyCredits().catch(console.error)}>
+              Buy Credits
+            </Button>
+            <Button onClick={() => signOut().catch(console.error)}>
+              Logout
+            </Button>
+          </>
         )}
         <form className="flex flex-col gap-4" onSubmit={handleFormSubmit}>
           <FormGroup>
