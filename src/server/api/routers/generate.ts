@@ -19,6 +19,8 @@ const s3 = new AWS.S3({
   region: "ap-southeast-2",
 });
 
+const BUCKET_NAME = "icon-generator-dat";
+
 const configuration = new Configuration({
   apiKey: env.OPENAI_API_KEY,
 });
@@ -85,7 +87,7 @@ export const generateRouter = createTRPCRouter({
       // Save the image (b64) to the database (S3)
       await s3
         .putObject({
-          Bucket: "icon-generator-dat",
+          Bucket: BUCKET_NAME,
           Body: Buffer.from(base64EncodedImage!, "base64"),
           Key: icon.id, // generate a random id
           ContentEncoding: "base64",
@@ -95,7 +97,7 @@ export const generateRouter = createTRPCRouter({
 
       return {
         message: "success",
-        imageUrl: base64EncodedImage,
+        imageUrl: `https://icon-generator-dat.s3.ap-southeast-2.amazonaws.com/${icon.id}`,
       };
     }),
 });
