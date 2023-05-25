@@ -7,7 +7,6 @@ import {
 } from "~/server/api/trpc";
 import { Configuration, OpenAIApi } from "openai";
 import { env } from "~/env.mjs";
-import { url } from "inspector";
 import { b64Image } from "~/data/b64Image";
 import AWS from "aws-sdk";
 
@@ -48,6 +47,7 @@ export const generateRouter = createTRPCRouter({
     .input(
       z.object({
         prompt: z.string(),
+        colour: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -74,7 +74,11 @@ export const generateRouter = createTRPCRouter({
         });
       }
 
-      const base64EncodedImage = await generateIcon(input.prompt);
+      // const finalPrompt = `a modern ${input.shape} icon in ${input.color} of ${input.prompt}, ${input.style}, minimialistic, high quality, trending on art station, unreal engine graphics quality`;
+
+      const finalPrompt = `Create an icon with the following properties: Prompt: ${input.prompt}, Colour: ${input.colour}, 3D rendered, shiny, glossy, with a transparent background, metallic material`;
+
+      const base64EncodedImage = await generateIcon(finalPrompt);
 
       // Write to our icon table
       const icon = await ctx.prisma.icon.create({
