@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { PageLinks } from "./PageLinks";
 import { AuthenticationButtons } from "./AuthenticationButtons";
+import { api } from "~/utils/api";
+import { useSession } from "next-auth/react";
 
 export function Dropdown() {
   const [isOpen, setIsOpen] = useState(false);
@@ -23,6 +25,12 @@ export function Dropdown() {
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
+  const session = useSession();
+  const isLoggedIn = !!session.data;
+
+  const credits = api.user.getCredits.useQuery(undefined, {
+    enabled: isLoggedIn,
+  });
   return (
     <>
       <div className="container cursor-pointer" onClick={toggleMenu}>
@@ -38,6 +46,14 @@ export function Dropdown() {
         </ul>
         <ul className="mt-4 flex flex-col items-center gap-4">
           <AuthenticationButtons />
+        </ul>
+
+        <ul>
+          <li>
+            <div className="mt-4 flex flex-col items-center ">
+              Credits: {credits.data}
+            </div>
+          </li>
         </ul>
       </div>
     </>

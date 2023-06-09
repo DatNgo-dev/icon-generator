@@ -5,12 +5,15 @@ export function Button(
   props: React.ComponentPropsWithoutRef<"button"> & {
     variant?: "primary" | "secondary";
     isLoading?: boolean;
+    styles?: string;
   }
 ) {
   const colour =
     (props.variant ?? "primary") === "primary"
       ? "bg-blue-400 hover:bg-blue-500"
       : "bg-gray-400 hover:bg-gray-500";
+
+  const styles = props.styles;
 
   return (
     <button

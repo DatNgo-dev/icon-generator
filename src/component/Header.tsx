@@ -10,9 +10,9 @@ export function Header() {
   const { buyCredits } = useBuyCredits();
   const isLoggedIn = !!session.data;
 
-  // const credits = api.user.getCredits.useQuery(undefined, {
-  //   enabled: isLoggedIn,
-  // });
+  const credits = api.user.getCredits.useQuery(undefined, {
+    enabled: isLoggedIn,
+  });
 
   return (
     <header className="dark:bg-gray-900">
@@ -37,14 +37,13 @@ export function Header() {
         <ul className="hidden gap-4 md:flex">
           {isLoggedIn && (
             <>
-              <div className="flex items-center">
-                {/* Credits remaining {credits.data} */}
-              </div>
+              <div className="flex items-center">Credits: {credits.data}</div>
               <li>
                 <Button
                   onClick={() => {
                     buyCredits().catch(console.error);
                   }}
+                  styles="md:"
                 >
                   Buy Credits
                 </Button>
